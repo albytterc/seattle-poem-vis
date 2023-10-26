@@ -1,25 +1,80 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+
+import "./App.css";
+import Welcome from "./pages/Welcome";
+import Vis1 from "./pages/Vis1";
+import Vis2 from "./pages/Vis2";
+import Vis3 from "./pages/Vis3";
+import Vis4 from "./pages/Vis4";
+import Summary from "./pages/Summary";
+import { PageContext } from "./PageContext";
 
 function App() {
+  const [pageIndex, setPageIndex] = useState(0);
+  const numPages = 17;
+  let currentComponent = <Welcome />;
+
+  switch (pageIndex) {
+    case 0:
+      currentComponent = <Welcome />;
+      break;
+    case 1:
+      currentComponent = <Vis2 />;
+      break;
+    case 2:
+      currentComponent = <Vis2 />;
+      break;
+    case 3:
+      currentComponent = <Vis2 />;
+      break;
+    case 4:
+      currentComponent = <Vis2 />;
+      break;
+    case 5:
+      currentComponent = <Vis1 />;
+      break;
+    case 6:
+      currentComponent = <Vis1 />;
+      break;
+    case 7:
+      currentComponent = <Vis3 />;
+      break;
+    case 8:
+      currentComponent = <Vis4 />; // vis 4
+      break;
+    case 9:
+      currentComponent = <Vis3 />; // vis 5
+      break;
+    case 10:
+      currentComponent = <Vis3 />; // vis 5
+      break;
+    case 11:
+      currentComponent = <Vis3 />; // vis 5
+      break;
+    case 12:
+      currentComponent = <Vis3 />; // vis 5
+      break;
+    case 13:
+      currentComponent = <Vis3 />; // vis 6
+      break;
+    case 14:
+      currentComponent = <Vis3 />; // vis 6
+      break;
+    case 15:
+      currentComponent = <Vis3 />; // vis 6
+      break;
+    case 16:
+      currentComponent = <Vis3 />; // vis 6
+      break;
+    case 17:
+      currentComponent = <Summary />;
+      break;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <PageContext.Provider value={{ numPages, pageIndex, setPageIndex }}>
+      {currentComponent}
+    </PageContext.Provider>
   );
 }
 
