@@ -4,7 +4,6 @@ import { PageContext } from "../PageContext";
 function Welcome() {
   const { pageIndex, setPageIndex } = useContext(PageContext);
   const handleArrowClick = () => {
-    console.log("HELLO");
     setPageIndex(pageIndex + 1);
   };
 

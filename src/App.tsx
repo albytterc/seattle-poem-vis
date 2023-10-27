@@ -6,6 +6,8 @@ import Vis1 from "./pages/Vis1";
 import Vis2 from "./pages/Vis2";
 import Vis3 from "./pages/Vis3";
 import Vis4 from "./pages/Vis4";
+import Vis5 from "./pages/Vis5";
+import Vis6 from "./pages/Vis6";
 import Summary from "./pages/Summary";
 import { PageContext } from "./PageContext";
 
@@ -43,28 +45,28 @@ function App() {
       currentComponent = <Vis4 />; // vis 4
       break;
     case 9:
-      currentComponent = <Vis3 />; // vis 5
+      currentComponent = <Vis5 />; // vis 5
       break;
     case 10:
-      currentComponent = <Vis3 />; // vis 5
+      currentComponent = <Vis5 />; // vis 5
       break;
     case 11:
-      currentComponent = <Vis3 />; // vis 5
+      currentComponent = <Vis5 />; // vis 5
       break;
     case 12:
-      currentComponent = <Vis3 />; // vis 5
+      currentComponent = <Vis5 />; // vis 5
       break;
     case 13:
-      currentComponent = <Vis3 />; // vis 6
+      currentComponent = <Vis5 />; // vis 6
       break;
     case 14:
-      currentComponent = <Vis3 />; // vis 6
+      currentComponent = <Vis6 />; // vis 6
       break;
     case 15:
-      currentComponent = <Vis3 />; // vis 6
+      currentComponent = <Vis6 />; // vis 6
       break;
     case 16:
-      currentComponent = <Vis3 />; // vis 6
+      currentComponent = <Vis6 />; // vis 6
       break;
     case 17:
       currentComponent = <Summary />;

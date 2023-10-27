@@ -23,6 +23,9 @@ function addLegend(keys: string[], x: number, y: number) {
       return y + i * 25 - 5;
     }) // 100 is where the first dot appears. 25 is the distance between dots
     .attr("r", 7)
+    .attr("fill", "#111")
+    // .transition()
+    // .duration(500)
     .attr("fill", (d: any) => color(d) as string)
     .attr("stroke", (d: any) => color(d) as string);
 
@@ -33,21 +36,18 @@ function addLegend(keys: string[], x: number, y: number) {
     .append("text")
     .classed("legend-text", true)
     .attr("x", x + 20)
-    .attr("y", function (d, i) {
-      return y + i * 25;
-    }) // 100 is where the first dot appears. 25 is the distance between dots
-    .attr("fill", function (d) {
-      return color(d) as string;
-    })
-    .attr("stroke", function (d) {
-      return color(d) as string;
-    })
-    .text(function (d) {
-      return d;
-    })
+    .attr("y", (d, i) => y + i * 25) // 100 is where the first dot appears. 25 is the distance between dots
+    .text((d) => d)
     .attr("text-anchor", "left")
-    .style("alignment-baseline", "middle");
+    .style("alignment-baseline", "middle")
+    .attr("stroke", "#111")
+    // .transition()
+    // .duration(500)
+    .attr("fill", (d) => color(d) as string)
+    .attr("stroke", (d) => color(d) as string);
 }
+
+let color: any;
 
 function createChart(
   data: any,
@@ -56,8 +56,9 @@ function createChart(
   xLabel: string,
   yLabel: string,
   title: string,
-  chart?: any
+  showAnimation: boolean
 ) {
+  d3.selectAll("#my_dataviz *").remove();
   // group by
   const fx = d3
     .scaleBand()
@@ -71,7 +72,7 @@ function createChart(
 
   const x = d3.scaleBand().domain(cause).rangeRound([0, fx.bandwidth()]);
 
-  const color = d3
+  color = d3
     .scaleOrdinal()
     .domain(cause)
     .range(d3.schemeSpectral[cause.size])
@@ -85,9 +86,6 @@ function createChart(
     .nice()
     .range([height, 0]);
 
-  // A function to format the value in the tooltip.
-  // const formatValue = (x) => (isNaN(x) ? "N/A" : x.toLocaleString("en"));
-
   // Create the SVG container.
   const svg = d3
     .select("#my_dataviz")
@@ -95,30 +93,56 @@ function createChart(
     .attr("height", height + margin.top + margin.bottom);
 
   // Append a group for each state, and a rect for each age.
-  svg
-    .append("g")
-    .attr("height", height)
-    .attr("width", width)
-    .selectAll()
-    .data(d3.group(data, (d: any) => d.groupBy))
-    .join("g")
-    .attr("height", height)
-    .attr("width", width)
-    .attr("transform", ([groupBy]) => `translate(${fx(groupBy)},0)`)
-    .selectAll()
-    .data(([, d]) => d.sort((a: any, b: any) => a.y - b.y))
-    .join("rect")
-    .classed("bar", true)
-    .attr("x", (d: any) => x(d.x) as number)
-    .attr("width", x.bandwidth())
-    .attr("fill", (d: any) => color(d.x) as string)
-    .attr("stroke", (d: any) => color(d.x) as string)
-    .attr("height", 0)
-    .attr("y", height + margin.top)
-    .transition()
-    .duration(500)
-    .attr("y", (d: any) => y(d.y) + margin.top)
-    .attr("height", (d: any) => height - y(d.y));
+  if (showAnimation) {
+    svg
+      .append("g")
+      .attr("height", height)
+      .attr("width", width)
+      .selectAll()
+      .data(d3.group(data, (d: any) => d.groupBy))
+      .join("g")
+      .attr("height", height)
+      .attr("width", width)
+      .attr("transform", ([groupBy]) => `translate(${fx(groupBy)},0)`)
+      .selectAll()
+      .data(([, d]) => d)
+      .join("rect")
+      .classed("bar", true)
+      .attr("x", (d: any) => x(d.x) as number)
+      .attr("width", x.bandwidth())
+      .attr("fill", (d: any) => color(d.x) as string)
+      .attr("stroke", (d: any) => color(d.x) as string)
+      .attr("height", 0)
+      .attr("y", height + margin.top)
+      .transition()
+      .duration(500)
+      .attr("y", (d: any) => y(d.y) + margin.top)
+      .attr("height", (d: any) => height - y(d.y));
+  } else {
+    svg
+      .append("g")
+      .attr("height", height)
+      .attr("width", width)
+      .selectAll()
+      .data(d3.group(data, (d: any) => d.groupBy))
+      .join("g")
+      .attr("height", height)
+      .attr("width", width)
+      .attr("transform", ([groupBy]) => `translate(${fx(groupBy)},0)`)
+      .selectAll()
+      .data(([, d]) => d)
+      .join("rect")
+      .classed("bar", true)
+      .attr("x", (d: any) => x(d.x) as number)
+      .attr("width", x.bandwidth())
+      .attr("stroke", (d: any) => color(d.x) as string)
+      .attr("y", (d: any) => y(d.y) + margin.top)
+      .attr("height", (d: any) => height - y(d.y))
+      .attr("fill", (d: any) => color(d.x) as string)
+      .transition()
+      .duration(500)
+      .attr("fill", (d: any) => color(d.x) as string);
+  }
 
   // Append the horizontal axis.
   const xAxis = svg
@@ -176,13 +200,7 @@ function createChart(
     .text(title);
 }
 
-function updateVis(pageIndex: number, pageToUpdateOn: number) {
-  if (pageIndex === pageToUpdateOn) {
-    highlightCause();
-  }
-}
-
-function highlightCause() {
+function highlightCause(on: boolean, colorFn: d3.ScaleOrdinal<any, any, any>) {
   const bars = d3.selectAll(".bar");
   bars.classed("highlight", (b: any) => {
     return b.x === "Alcohol or drug use";
@@ -210,7 +228,7 @@ function highlightCause() {
   d3.selectAll(".legend-text:not(.highlight)")
     .transition()
     .duration(500)
-    .style("opacity", 0.5);
+    .style("opacity", on ? 0.5 : 1);
 }
 
 interface GroupedBarChartProps {
@@ -235,9 +253,21 @@ function GroupedBarChart({
   const chartHeight = height - margin.top - margin.bottom;
   const chartWidth = width - margin.left - margin.right;
   const { pageIndex } = useContext(PageContext);
+
   useEffect(() => {
-    createChart(data, chartWidth, chartHeight, xLabel, yLabel, title);
-    if (updateOnPage) updateVis(pageIndex, updateOnPage);
+    createChart(data, chartWidth, chartHeight, xLabel, yLabel, title, true);
+  }, []);
+
+  useEffect(() => {
+    if (pageIndex === updateOnPage) {
+      console.log("creating chart and highlighting cause");
+      createChart(data, chartWidth, chartHeight, xLabel, yLabel, title, false);
+      setTimeout(() => {
+        highlightCause(true, color);
+      }, 100);
+    } else if (updateOnPage && pageIndex === updateOnPage - 1) {
+      createChart(data, chartWidth, chartHeight, xLabel, yLabel, title, false);
+    }
   }, [pageIndex]);
 
   return (

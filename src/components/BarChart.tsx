@@ -1,7 +1,7 @@
 import * as d3 from "d3";
 import { useEffect } from "react";
 
-const margin = { top: 40, right: 0, bottom: 60, left: 60 };
+const margin = { top: 40, right: 0, bottom: 200, left: 60 };
 
 function createChart(
   data: any,
@@ -34,9 +34,9 @@ function createChart(
     .attr("transform", `translate(0,${height})`)
     .call(
       d3.axisBottom(xScale).tickFormat((d, i) => {
-        const maxLengthTick = 27;
+        const maxLengthTick = 30;
         if (d.length > maxLengthTick) {
-          return d.substring(0, 27).trimEnd() + "...";
+          return d.substring(0, maxLengthTick - 3).trimEnd() + "...";
         }
         return d;
       })
@@ -45,6 +45,8 @@ function createChart(
   xAxis.selectAll("path, line").attr("stroke", "white");
   xAxis
     .selectAll("text")
+    .attr("text-anchor", "end")
+    .attr("transform", "rotate(-45)")
     .attr("stroke", "white")
     .attr("fill", "white")
     .style("font-size", "14px");
