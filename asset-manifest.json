@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/seattle-poem-vis/static/css/main.2b1196cb.css",
+    "main.js": "/seattle-poem-vis/static/js/main.be519b79.js",
+    "index.html": "/seattle-poem-vis/index.html",
+    "main.2b1196cb.css.map": "/seattle-poem-vis/static/css/main.2b1196cb.css.map",
+    "main.be519b79.js.map": "/seattle-poem-vis/static/js/main.be519b79.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.2b1196cb.css",
+    "static/js/main.be519b79.js"
+  ]
+}
