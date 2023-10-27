@@ -57,7 +57,7 @@ function createChart(
     .attr("fill", "white")
     .attr("text-anchor", "middle")
     .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", height + margin.top + margin.bottom)
+    .attr("y", height + margin.top + margin.bottom - 15)
     .style("font-size", "16px")
     .text(xLabel);
 
