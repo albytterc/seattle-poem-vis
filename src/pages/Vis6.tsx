@@ -32,7 +32,7 @@ function Vis6() {
           height={600}
           xLabel="Issue Accessing Services"
           yLabel="Percent of Homeless Afflicted"
-          title="Seattle Homeless Issue Accessing Services"
+          title="Percent of Seattle's Homeless with Issues Accessing Services"
           data={data}
         />
       )}
