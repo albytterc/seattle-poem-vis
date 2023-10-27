@@ -43,5 +43,5 @@
     "typescript": "^4.9.5",
     "react-scripts": "5.0.1"
   },
-  "homepage": "https://albytterc.github.io/seattle-poem-vis"
+  "homepage": "."
 }
