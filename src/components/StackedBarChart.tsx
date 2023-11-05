@@ -135,11 +135,33 @@ function createChart(
     .style("fill", "white")
     .text(title);
 
-  chart
-    .append("g")
-    .selectAll("g")
-    .data(data)
-    .enter()
+  const myChart = chart.append("g").selectAll("g").data(data).enter();
+  // .join((enter) => {
+  // enter
+  //   .append("text")
+  //   .classed("bar-val", true)
+  //   .text((d: any) => {console.log(d); return d.y})
+  //   .attr("fill", "none")
+  //   .attr("text-anchor", "middle")
+  //   .attr("x", (d: any) => (xScale(d.groupBy) as number) + xScale.bandwidth() / 2)
+  //   .attr("y", (d: any) => (yScale(d.y) + margin.top - 5) as number);
+  // return enter.select("rect");
+  // })
+  // .enter()
+  // .classed("bar-val", true)
+  // .text((d: any) => {
+  //   console.log(d);
+  //   return d.y;
+  // })
+  // .attr("fill", "none")
+  // .attr("text-anchor", "middle")
+  // .attr(
+  //   "x",
+  //   (d: any) => (xScale(d.groupBy) as number) + xScale.bandwidth() / 2
+  // )
+  // .attr("y", (d: any) => (yScale(d.y) + margin.top - 5) as number);
+
+  myChart
     .append("rect")
     .attr("class", "bar")
     .attr("x", (d: any) => xScale(d.groupBy) as number)
@@ -151,6 +173,28 @@ function createChart(
     .duration(500)
     .attr("y", (d: any) => yScale(d.y))
     .attr("height", (d: any) => height - yScale(d.y));
+
+  myChart
+    .append("text")
+    .classed("bar-val", true)
+    .text((d: any) => d.y)
+    .attr("fill", "none")
+    .attr("text-anchor", "middle")
+    .attr(
+      "x",
+      (d: any) => (xScale(d.groupBy) as number) + xScale.bandwidth() / 2
+    )
+    .attr("y", (d: any) => (yScale(d.y) + margin.top - 5) as number);
+
+  svg.selectAll(".bar").on("mouseover", function (b: any) {
+    // make bars show exact value
+    d3.selectAll(".bar-val").attr("fill", "white");
+  });
+
+  svg.selectAll(".bar").on("mouseout", function (b: any) {
+    // make bars show exact value
+    d3.selectAll(".bar-val").attr("fill", "none");
+  });
 }
 
 interface StackedBarChartProps {

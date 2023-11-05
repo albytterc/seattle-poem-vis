@@ -3,51 +3,140 @@ import { useContext, useEffect } from "react";
 import { PageContext } from "../PageContext";
 
 const margin = { top: 40, right: 0, bottom: 40, left: 70 };
+let color: any;
 
-function addLegend(keys: string[], x: number, y: number) {
-  const Svg = d3.select("#my_dataviz").append("g");
-  // Usually you have a color scale in your chart already
-  let color = d3
-    .scaleOrdinal()
-    .domain(keys)
-    .range(d3.schemeSpectral[keys.length]);
+function addLegend(
+  keys: string[],
+  x: number,
+  y: number,
+  color: d3.ScaleOrdinal<any, any, any>
+) {
+  const Svg = d3.select("#my_dataviz").append("g").classed("legend", true);
 
   // Add one dot in the legend for each name.
-  Svg.selectAll("mydots")
+  const legendRows = Svg.selectAll("mylegendrow")
     .data(keys)
     .enter()
+    .append("g")
+    .classed("legend-row", true)
+    .style("cursor", "pointer");
+
+  // adds legend circle for each row
+  legendRows
     .append("circle")
     .classed("legend-dot", true)
     .attr("cx", x)
     .attr("cy", function (d, i) {
       return y + i * 25 - 5;
-    }) // 100 is where the first dot appears. 25 is the distance between dots
+    })
     .attr("r", 7)
-    .attr("fill", "#111")
-    // .transition()
-    // .duration(500)
     .attr("fill", (d: any) => color(d) as string)
     .attr("stroke", (d: any) => color(d) as string);
 
-  // Add one dot in the legend for each name.
-  Svg.selectAll("mylabels")
-    .data(keys)
-    .enter()
+  // adds legend text for each row
+  legendRows
     .append("text")
     .classed("legend-text", true)
     .attr("x", x + 20)
-    .attr("y", (d, i) => y + i * 25) // 100 is where the first dot appears. 25 is the distance between dots
+    .attr("y", (d, i) => y + i * 25)
     .text((d) => d)
     .attr("text-anchor", "left")
     .style("alignment-baseline", "middle")
-    .attr("stroke", "#111")
-    // .transition()
-    // .duration(500)
     .attr("fill", (d) => color(d) as string)
     .attr("stroke", (d) => color(d) as string);
 }
 
-let color: any;
+function selectRow() {
+  d3.selectAll(".legend-row").on("click", function () {
+    let selectedRow = d3.select(this);
+
+    // @ts-ignore
+    const highlightedCause = selectedRow.node().__data__;
+
+    if (selectedRow.classed("highlighted")) {
+      selectedRow.classed("highlighted", false);
+      highlightCause("", color);
+    } else {
+      d3.selectAll(".legend-row").classed("highlighted", false);
+      selectedRow.classed("highlighted", true);
+      highlightCause(highlightedCause, color);
+    }
+  });
+}
+
+function highlightCause(
+  cause: string,
+  colorFn: d3.ScaleOrdinal<any, any, any>
+) {
+  // no filter applied, show all colors as normal
+  if (cause === "") {
+    d3.selectAll(".bar")
+      .transition()
+      .duration(500)
+      .attr("fill", (d: any) => colorFn(d.x));
+
+    // highlighting selected text
+    d3.selectAll(".legend-row .legend-text")
+      .transition()
+      .duration(500)
+      .style("opacity", 1);
+
+    // highlighting selected dots
+    d3.selectAll(".legend-row .legend-dot")
+      .transition()
+      .duration(500)
+      .attr("fill", (d: any) => colorFn(d));
+  } else {
+    const bars = d3.selectAll(".bar");
+    bars.classed("highlight", (b: any) => {
+      return b.x === cause;
+    });
+
+    const legendRows = d3.selectAll(".legend-row");
+    legendRows.classed("highlight", (d: any) => {
+      return d === cause;
+    });
+
+    /** HIGHLIGHTING SELECTED CAUSE **/
+
+    // highlighting selected bars
+    d3.selectAll(".bar.highlight")
+      .transition()
+      .duration(500)
+      .attr("fill", (d: any) => colorFn(d.x));
+
+    // highlighting selected text
+    d3.selectAll(".legend-row.highlight .legend-text")
+      .transition()
+      .duration(500)
+      .style("opacity", 1);
+
+    // highlighting selected dots
+    d3.selectAll(".legend-row.highlight .legend-dot")
+      .transition()
+      .duration(500)
+      .attr("fill", (d: any) => colorFn(d));
+
+    // unhighlight all other causes
+    const unselectedRows = d3.selectAll(".legend-row:not(.highlight)");
+    unselectedRows
+      .selectAll(".legend-text")
+      .transition()
+      .duration(500)
+      .style("opacity", 0.5);
+
+    unselectedRows
+      .selectAll(".legend-dot")
+      .transition()
+      .duration(500)
+      .attr("fill", "#111");
+
+    d3.selectAll(".bar:not(.highlight)")
+      .transition()
+      .duration(500)
+      .attr("fill", "#111");
+  }
+}
 
 function createChart(
   data: any,
@@ -68,15 +157,11 @@ function createChart(
 
   // Both x and color encode the cause class.
   const cause = new Set<string>(data.map((d: any) => d.x));
-  addLegend(Array.from(cause), width - margin.right - 200, margin.top);
+  color = d3.scaleOrdinal().domain(cause).range(d3.schemeSpectral[cause.size]);
+
+  addLegend(Array.from(cause), width - margin.right - 200, margin.top, color);
 
   const x = d3.scaleBand().domain(cause).rangeRound([0, fx.bandwidth()]);
-
-  color = d3
-    .scaleOrdinal()
-    .domain(cause)
-    .range(d3.schemeSpectral[cause.size])
-    .unknown("#ccc");
 
   // Y encodes the height of the bar.
   const y = d3
@@ -106,7 +191,18 @@ function createChart(
       .attr("transform", ([groupBy]) => `translate(${fx(groupBy)},0)`)
       .selectAll()
       .data(([, d]) => d)
-      .join("rect")
+      .join((enter) => {
+        const g = enter.append("g");
+        g.append("rect");
+        g.append("text")
+          .classed("bar-val", true)
+          .text((d: any) => d.y)
+          .attr("fill", "none")
+          .attr("text-anchor", "middle")
+          .attr("x", (d: any) => (x(d.x) as number) + x.bandwidth() / 2)
+          .attr("y", (d: any) => (y(d.y) + margin.top - 5) as number);
+        return g.select("rect");
+      })
       .classed("bar", true)
       .attr("x", (d: any) => x(d.x) as number)
       .attr("width", x.bandwidth())
@@ -131,7 +227,18 @@ function createChart(
       .attr("transform", ([groupBy]) => `translate(${fx(groupBy)},0)`)
       .selectAll()
       .data(([, d]) => d)
-      .join("rect")
+      .join((enter) => {
+        const g = enter.append("g");
+        g.append("rect");
+        g.append("text")
+          .classed("bar-val", true)
+          .text((d: any) => d.y)
+          .attr("fill", "none")
+          .attr("text-anchor", "middle")
+          .attr("x", (d: any) => (x(d.x) as number) + x.bandwidth() / 2)
+          .attr("y", (d: any) => (y(d.y) + margin.top - 5) as number);
+        return g.select("rect");
+      })
       .classed("bar", true)
       .attr("x", (d: any) => x(d.x) as number)
       .attr("width", x.bandwidth())
@@ -144,6 +251,16 @@ function createChart(
       .attr("fill", (d: any) => color(d.x) as string);
   }
 
+  // svg.selectAll(".bar").append("text").text("Hello").style("color", "white").style("font-size", "14px").attr("x", (d: any) => x(d.x) as number).attr("y", (d: any) => y(d.y) as number)
+
+  svg.selectAll(".bar").on("mouseover", function (b: any) {
+    // make bars show exact value
+    d3.selectAll(".bar-val").attr("fill", "white");
+  });
+  svg.selectAll(".bar").on("mouseout", function (b: any) {
+    // make bars show exact value
+    d3.selectAll(".bar-val").attr("fill", "none");
+  });
   // Append the horizontal axis.
   const xAxis = svg
     .append("g")
@@ -200,37 +317,6 @@ function createChart(
     .text(title);
 }
 
-function highlightCause(on: boolean, colorFn: d3.ScaleOrdinal<any, any, any>) {
-  const bars = d3.selectAll(".bar");
-  bars.classed("highlight", (b: any) => {
-    return b.x === "Alcohol or drug use";
-  });
-
-  d3.selectAll(".bar:not(.highlight)")
-    .transition()
-    .duration(500)
-    .attr("fill", "#111");
-
-  const dots = d3.selectAll(".legend-dot");
-  dots.classed("highlight", (d: any) => {
-    return d === "Alcohol or drug use";
-  });
-
-  d3.selectAll(".legend-dot:not(.highlight)")
-    .transition()
-    .duration(500)
-    .attr("fill", "#111");
-
-  d3.selectAll(".legend-text").classed("highlight", (b: any) => {
-    return b === "Alcohol or drug use";
-  });
-
-  d3.selectAll(".legend-text:not(.highlight)")
-    .transition()
-    .duration(500)
-    .style("opacity", on ? 0.5 : 1);
-}
-
 interface GroupedBarChartProps {
   width: number;
   height: number;
@@ -263,11 +349,12 @@ function GroupedBarChart({
       console.log("creating chart and highlighting cause");
       createChart(data, chartWidth, chartHeight, xLabel, yLabel, title, false);
       setTimeout(() => {
-        highlightCause(true, color);
+        highlightCause("Alcohol or drug use", color);
       }, 100);
     } else if (updateOnPage && pageIndex === updateOnPage - 1) {
-      createChart(data, chartWidth, chartHeight, xLabel, yLabel, title, false);
+      highlightCause("", color)
     }
+    selectRow();
   }, [pageIndex]);
 
   return (
