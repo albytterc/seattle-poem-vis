@@ -136,30 +136,6 @@ function createChart(
     .text(title);
 
   const myChart = chart.append("g").selectAll("g").data(data).enter();
-  // .join((enter) => {
-  // enter
-  //   .append("text")
-  //   .classed("bar-val", true)
-  //   .text((d: any) => {console.log(d); return d.y})
-  //   .attr("fill", "none")
-  //   .attr("text-anchor", "middle")
-  //   .attr("x", (d: any) => (xScale(d.groupBy) as number) + xScale.bandwidth() / 2)
-  //   .attr("y", (d: any) => (yScale(d.y) + margin.top - 5) as number);
-  // return enter.select("rect");
-  // })
-  // .enter()
-  // .classed("bar-val", true)
-  // .text((d: any) => {
-  //   console.log(d);
-  //   return d.y;
-  // })
-  // .attr("fill", "none")
-  // .attr("text-anchor", "middle")
-  // .attr(
-  //   "x",
-  //   (d: any) => (xScale(d.groupBy) as number) + xScale.bandwidth() / 2
-  // )
-  // .attr("y", (d: any) => (yScale(d.y) + margin.top - 5) as number);
 
   myChart
     .append("rect")

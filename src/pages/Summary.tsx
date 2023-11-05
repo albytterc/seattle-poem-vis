@@ -15,9 +15,9 @@ function Summary() {
             Ballad of the Lost City
           </h1>
           <div>
-            {poem.map((o) => {
+            {poem.map((o, i) => {
               return (
-                <p className={`font-jost text-2xl whitespace-pre-line`}>
+                <p onClick={() => setPageIndex(i + 1)} className={`font-jost text-2xl whitespace-pre-line`}>
                   {o.text}
                 </p>
               );
