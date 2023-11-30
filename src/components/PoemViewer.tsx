@@ -22,7 +22,11 @@ function PoemViewer() {
         Ballad of the Lost City
       </h1>
       {!showVerse && !showAll && (
-        <p className="font-jost font-bold text-2xl">
+        <p
+          className={`font-jost font-bold text-2xl ${
+            pageIndex === 1 ? "animate-pulse" : ""
+          }`}
+        >
           {poem[pageIndex - 1].text}
         </p>
       )}

@@ -31,7 +31,7 @@ function Vis2() {
       {data.length > 0 && (
         <GroupedBarChart
           width={1280}
-          height={600}
+          height={500}
           xLabel="Years"
           yLabel="Percent Homeless due to Cause"
           title="Seattle Homelessness by Cause Over Time"

@@ -30,7 +30,7 @@ function Vis4() {
       {data.length > 0 && (
         <StackedBarChart
           width={1280}
-          height={600}
+          height={500}
           xLabel="Year"
           yLabel="Percent of Employment Status"
           title="Seattle Homelessness Employment Status"

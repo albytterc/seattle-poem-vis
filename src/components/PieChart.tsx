@@ -85,6 +85,13 @@ function addLegend(
   color: d3.ScaleOrdinal<any, any, any>
 ) {
   const Svg = d3.select("#my_dataviz").append("g").classed("legend", true);
+  Svg.append("text")
+    .text("Click legend to filter")
+    .attr("font-size", "110%")
+    .attr("x", x - 10)
+    .attr("y", y - 22)
+    .attr("fill", "white")
+    .attr("stroke", "white");
 
   // Add one dot in the legend for each name.
   const legendRows = Svg.selectAll("mylegendrow")

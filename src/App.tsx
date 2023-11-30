@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import "./App.css";
 import Welcome from "./pages/Welcome";
@@ -15,6 +15,21 @@ function App() {
   const [pageIndex, setPageIndex] = useState(0);
   const numPages = 17;
   let currentComponent = <Welcome />;
+
+  useEffect(() => {
+    const handleArrowKeys = (event: KeyboardEvent) => {
+      if (event.key === "ArrowRight" && pageIndex < numPages) {
+        setPageIndex(pageIndex + 1);
+      } else if (event.key === "ArrowLeft" && pageIndex > 0) {
+        setPageIndex(pageIndex - 1);
+      }
+    };
+    window.addEventListener("keydown", handleArrowKeys);
+
+    return () => {
+      window.removeEventListener("keydown", handleArrowKeys);
+    };
+  }, [pageIndex]);
 
   switch (pageIndex) {
     case 0:

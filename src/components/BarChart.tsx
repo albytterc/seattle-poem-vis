@@ -57,7 +57,7 @@ function createChart(
     .attr("fill", "white")
     .attr("text-anchor", "middle")
     .attr("x", (width + margin.left + margin.right) / 2)
-    .attr("y", height + margin.top + margin.bottom - 15)
+    .attr("y", height + margin.bottom)
     .style("font-size", "16px")
     .text(xLabel);
 
@@ -113,6 +113,28 @@ function createChart(
     .duration(500)
     .attr("y", (d: any) => yScale(d.y))
     .attr("height", (d: any) => height - yScale(d.y));
+
+  chart
+    .append("g")
+    .selectAll("text")
+    .data(data)
+    .enter()
+    .append("text")
+    .text((d: any) => d.y) // assuming the value to display is in the 'y' property
+    .classed("bar-val", true)
+    .attr("x", (d: any) => (xScale(d.x) as number) + xScale.bandwidth() / 2) // center the text above each bar
+    .attr("y", (d: any) => yScale(d.y) - 5) // position the text a bit above each bar
+    .attr("text-anchor", "middle") // center the text horizontally
+    .attr("fill", "none"); // set the text color
+
+  svg.selectAll(".bar").on("mouseover", function (b: any) {
+    // make bars show exact value
+    d3.selectAll(".bar-val").attr("fill", "white");
+  });
+  svg.selectAll(".bar").on("mouseout", function (b: any) {
+    // make bars hide exact value
+    d3.selectAll(".bar-val").attr("fill", "none");
+  });
 }
 
 interface BarChartProps {
@@ -141,7 +163,7 @@ function BarChart({
   }, []);
 
   return (
-    <div className="absolute m-auto top-[55%] left-[50%] -translate-x-1/2 -translate-y-1/2">
+    <div className="absolute m-auto top-[58%] left-[50%] -translate-x-1/2 -translate-y-1/2">
       <svg id="my_dataviz"></svg>
     </div>
   );

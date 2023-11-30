@@ -28,8 +28,8 @@ function Vis1() {
     <VisWrapper>
       {data.length > 0 && (
         <LineChart
-          width={1280}
-          height={600}
+          width={1200}
+          height={500}
           xLabel="Years"
           yLabel="Homeless Population"
           title="Seattle Homeless Population Over Time"
