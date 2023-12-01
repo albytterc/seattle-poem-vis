@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { PageContext } from "../PageContext";
 import poem from "../data/poem";
@@ -7,6 +7,14 @@ function PoemViewer() {
   const { pageIndex } = useContext(PageContext);
   const [showVerse, setShowVerse] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (pageIndex === 1) {
+      setLoading(true);
+      setTimeout(() => setLoading(false), 2000);
+    }
+  }, [pageIndex]);
 
   return (
     <div
@@ -22,13 +30,17 @@ function PoemViewer() {
         Ballad of the Lost City
       </h1>
       {!showVerse && !showAll && (
-        <p
-          className={`font-jost font-bold text-2xl ${
-            pageIndex === 1 ? "animate-pulse" : ""
-          }`}
-        >
-          {poem[pageIndex - 1].text}
-        </p>
+        <>
+          {loading ? (
+            <p className="font-jost font-bold text-2xl animate-pulse">
+              Loading poem line here...
+            </p>
+          ) : (
+            <p className="font-jost font-bold text-2xl">
+              {poem[pageIndex - 1].text}
+            </p>
+          )}
+        </>
       )}
       {showVerse && (
         <div>

@@ -17,13 +17,23 @@ function VisWrapper({
   return (
     <div className="h-screen w-screen bg-black/[.85] relative">
       {showPoemViewer && <PoemViewer />}
-      <div
-        className={`absolute right-0 ${
-          pageIndex === 17 ? "animate-pulse" : ""
-        }`}
-      >
+      <div className={`absolute right-0 flex flex-row gap-1`}>
         <button
-          className="bg-white p-2"
+          className={`bg-[#D9D9D9] p-2 rounded ${
+            pageIndex === 1 ? "animate-pulse" : ""
+          }`}
+          onClick={() =>
+            alert(
+              "The poem loads one line at a time underneath the title. Use the arrow keys or the buttons at the bottom to navigate.\n\nPlay around with the charts and poem to interact with them!"
+            )
+          }
+        >
+          Help
+        </button>
+        <button
+          className={`bg-[#D9D9D9] p-2 rounded ${
+            pageIndex === 17 ? "animate-pulse" : ""
+          }`}
           onClick={() => window.location.reload()}
         >
           Restart
